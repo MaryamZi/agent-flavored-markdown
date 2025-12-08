@@ -1,13 +1,13 @@
 # Project information
 site_name: Agent Flavored Markdown
-site_url: https://wso2.github.io/agent-flavored-markdown/
-site_author: wso2
+site_url: https://maryamzi.github.io/agent-flavored-markdown/
+site_author: MaryamZi
 site_description: >-
   A specification for describing AI agents in a portable and interoperable way.
 
 # Repository
-repo_name: wso2/agent-flavored-markdown
-repo_url: https://github.com/wso2/agent-flavored-markdown
+repo_name: MaryamZi/agent-flavored-markdown
+repo_url: https://github.com/MaryamZi/agent-flavored-markdown
 
 theme:
   name: material
@@ -86,7 +86,7 @@ extra_javascript:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/wso2/agent-flavored-markdown
+      link: https://github.com/MaryamZi/agent-flavored-markdown
   # TODO: Enable analytics if needed
   # analytics:
   #   provider: google

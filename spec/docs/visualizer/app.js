@@ -130,6 +130,30 @@ interfaces:
     exposure:
       http:
         path: \"/code-review\"
+  - type: webhook
+    prompt: |
+      A new GitHub pull request event was received.
+
+      Repository: \${http:payload.repository.full_name}
+      PR Title: \${http:payload.pull_request.title}
+      Author: \${http:payload.pull_request.user.login}
+
+      Please review this pull request and provide feedback.
+    signature:
+      output:
+        type: object
+        properties:
+          review_comments:
+            type: array
+            items:
+              type: string
+    subscription:
+      protocol: \"websub\"
+      hub: \"https://api.github.com/hub\"
+      topic: \"https://github.com/\${env:GITHUB_ORG}/\${env:GITHUB_REPO}/events/pull_request.json\"
+    exposure:
+      http:
+        path: \"/github-webhook\"
 tools:
   mcp:
     - name: \"github\"
@@ -734,8 +758,22 @@ function renderHubSpoke(metadata, markdownBody) {
                 ${interfaces.length === 1
                     ? `<line x1="600" y1="450" x2="1010" y2="${interfaceStart + (UI_CONSTANTS.BOX_HEIGHT / 2)}" class="connection-line-interface" stroke-width="2.5" />`
                     : interfaces.map((_, idx) => {
-                        // For multiple interfaces, use spacing
-                        const y = interfaceStart + (2 * idx * interfaceSpacing) + (UI_CONSTANTS.BOX_HEIGHT / 2);
+                        // For multiple interfaces, use spacing with visual fanning effect
+                        // Calculate position based on actual box position
+                        let y = interfaceStart + (idx * interfaceSpacing) + (UI_CONSTANTS.BOX_HEIGHT / 2);
+
+                        // Add visual fanning effect: spread lines out more than boxes
+                        // Use a scaling factor that reduces for later interfaces to avoid excessive spread
+                        if (interfaces.length > 1 && idx > 0) {
+                            const fanFactor = interfaces.length === 2 ? 1.0 : 0.6; // Less aggressive for 3+ interfaces
+                            y += idx * interfaceSpacing * fanFactor;
+                        }
+
+                        // Move first interface line down past the label
+                        if (idx === 0) {
+                            y += UI_CONSTANTS.GROUP_LABEL_OFFSET + 40;
+                        }
+
                         return `<line x1="600" y1="450" x2="1010" y2="${y}" class="connection-line-interface" stroke-width="2.5" />`;
                     }).join('')}
                 ${hasExecutionConfig ? (() => {
@@ -842,8 +880,7 @@ function renderHubSpoke(metadata, markdownBody) {
 function handleSpokeClick(e) {
     const element = e.currentTarget;
     const spokeType = element.getAttribute('data-spoke-type');
-    const spokeIndex = element.getAttribute('data-spoke-index');
-    
+    const spokeIndex = parseInt(element.getAttribute('data-spoke-index'), 10);
     showSpokeDetails(spokeType, spokeIndex);
 }
 
@@ -1115,6 +1152,28 @@ function renderInterfaceDetails(interfaceConfig, index) {
     const interfaceTypeValue = interfaceConfig?.type || 'consolechat';
     const indexLabel = index !== undefined ? ` #${index + 1}` : '';
 
+    let promptHtml = '';
+    if (interfaceTypeValue === 'webhook' && interfaceConfig.prompt) {
+        // Preserve line breaks by converting single newlines to <br> before markdown processing
+        const promptWithBreaks = interfaceConfig.prompt.replace(/\n/g, '  \n');
+        const renderedPrompt = convertMarkdownToHtml(promptWithBreaks);
+        // Highlight variable substitutions in the rendered HTML
+        const highlightedPrompt = renderedPrompt.replace(/(\$\{[^}]+\})/g, '<span class="badge badge-var-interp" title="Variable substitution">$1</span>');
+        promptHtml = `
+            <hr class="my-4">
+            <h6 class="text-muted mb-3">Webhook Prompt Template</h6>
+            <div class="mb-3">
+                <div class="markdown-content border rounded p-3 bg-light">
+                    ${highlightedPrompt}
+                </div>
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    This template constructs the agent query from webhook data using <code>$\{http:payload.*}</code> and <code>$\{http:header.*}</code> variables.
+                </small>
+            </div>
+        `;
+    }
+
     let subscriptionHtml = '';
     if (interfaceTypeValue === 'webhook' && interfaceConfig.subscription) {
         const sub = interfaceConfig.subscription;
@@ -1157,6 +1216,7 @@ function renderInterfaceDetails(interfaceConfig, index) {
                         ${renderSchemaDetails(interfaceSignature.output)}
                     </div>
                 ` : ''}
+                ${promptHtml}
                 ${subscriptionHtml}
                 ${Object.keys(interfaceExposure).length > 0 ? `
                     <hr class="my-4">

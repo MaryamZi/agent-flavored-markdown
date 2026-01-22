@@ -6,16 +6,22 @@ hide:
 
 <div class="hero-section">
   <div class="hero-content">
-    <h1 class="hero-title">Agent Flavored Markdown</h1>
+    <h1 class="hero-title">Agent-Flavored Markdown</h1>
     <p class="hero-subtitle">No-code, portable agents</p>
     <div class="hero-buttons">
-      <a href="specification" class="hero-button hero-button-secondary" target="_blank" rel="noopener">
+      <a href="specification" class="hero-button hero-button-secondary">
         <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
         <span>Read the Specification</span>
       </a>
-      <a href="https://hub.docker.com/r/maryamzi/afm-interpreter" class="hero-button hero-button-secondary" target="_blank" rel="noopener">
+      <a href="examples/friendly_assistant.afm/" class="hero-button hero-button-secondary">
+        <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+        </svg>
+        <span>Browse Examples</span>
+      </a>
+      <a href="reference-implementation" class="hero-button hero-button-secondary">
         <svg class="button-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m4 0h-1v-4h-1m-4 0h-1v-4h-1" />
           <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none" />
@@ -49,10 +55,14 @@ tools:
     - name: "github"
       transport:
         type: "http"
-        url: "${env:GITHUB_MCP_URL}"
+        url: "https://api.githubcopilot.com/mcp/"
         authentication:
           type: "bearer"
           token: "${env:GITHUB_TOKEN}"
+      tool_filter:
+        allow:
+          - "pull_request_read"
+          - "get_file_contents"
 ---
 
 # Role
@@ -93,7 +103,7 @@ Acknowledge good practices.
         </svg>
       </div>
       <h3 class="feature-title">No code</h3>
-      <p class="feature-description">Define agents in plain markdown — no programming required.</p>
+      <p class="feature-description">Agent definitions in markdown with frontmatter — no programming required.</p>
     </div>
     <div class="feature-item">
       <div class="feature-icon-box">
@@ -102,7 +112,7 @@ Acknowledge good practices.
         </svg>
       </div>
       <h3 class="feature-title">Portable</h3>
-      <p class="feature-description">AFM agents work across different platforms and tools. Write once, deploy anywhere.</p>
+      <p class="feature-description">Agents that work across platforms and tools. Write once, deploy anywhere — secure and flexible across environments, interfaces included.</p>
     </div>
     <div class="feature-item">
       <div class="feature-icon-box">

@@ -9,7 +9,7 @@ hide:
 
 ## 1. Introduction
 
-AFM (Agent Flavored Markdown) is a markdown-based format to define AI agents. It allows agents to be written in text once and reused across different platforms.
+AFM (Agent-Flavored Markdown) is a markdown-based format to define AI agents. It allows agents to be written in text once and reused across different platforms.
 
 This document details the AFM file format, its syntax, and the schema for defining an agent.
 
@@ -41,12 +41,11 @@ AFM defines the following core concepts:
 - **Interface**: How the agent is invoked and its input/output contract.
 
 !!! note "Agent Memory"
-    AFM does not prescribe a standard for agent memory yet. Implementations MAY provide memory features as appropriate for their platform.
-
+    Given the lack of standardization, AFM does not prescribe a standard for agent memory yet.
 
 ## 3. File Extension
 
-An agent definition file must use the `.afm.md` or `.afm` extension. 
+An agent definition file MUST use the `.afm.md` or `.afm` extension. 
 
 ## 4. Syntax Overview
 
@@ -82,8 +81,8 @@ Users can use markdown syntax to format the text, including headings, lists, lin
 
 The Markdown body **MUST** contain the following headings, with corresponding content.
 
- - `# Role`: Defines the agent's purpose and responsibilities. This section describes what the agent does and the context in which it operates. This content typically forms the opening context of the system prompt.
- - `# Instructions`: Provides directives that shape the agent's behavior, capabilities, and operational guidelines. This section contains the core logic and rules that govern how the agent processes inputs and generates outputs.
+  - `# Role`: Defines the agent's purpose and responsibilities. This section describes what the agent does and the context in which it operates. This content typically forms the opening context of the system prompt.
+  - `# Instructions`: Provides directives that shape the agent's behavior, capabilities, and operational guidelines. This section contains the core logic and rules that govern how the agent processes inputs and generates outputs.
 
 ### 4.4. Example
 
@@ -104,7 +103,7 @@ The Markdown body **MUST** contain the following headings, with corresponding co
         - name: "math_operations"
           transport:
             type: "http"
-            url: "${MATH_MCP_SERVER}"
+            url: "${env:MATH_MCP_SERVER}"
     ---
 
     # Role
@@ -640,7 +639,7 @@ The `mcp` field is an array where each element represents an MCP server connecti
 | `authentication` | Object | No       | Authentication configuration for the connection. See [Section 5.6](#56-authentication) for the schema.|
 
 !!! note "HTTP Transport Only"
-    AFM currently supports only HTTP transport for MCP connections, but may support other transports in the future.
+    AFM currently supports only the streamable HTTP transport for MCP connections, but may support other transports in the future.
 
 **<a id="tool-filter-object"></a>Tool Filter Object:**
 
@@ -773,4 +772,8 @@ Implementations **SHOULD** handle missing or invalid variable references gracefu
 
 This section outlines potential future enhancements to the AFM specification, including:
 
-- Exposing agents via the Agent-to-Agent (A2A) protocol.
+- Extending tool support to include MCP tools with STDIO transport, OpenAPI-based tools for existing services, and functions as tools
+- First-class support for multi-agent interaction via the Agent-to-Agent (A2A) protocol
+- Support for an Agent memory abstraction covering common memory patterns
+- Support for Agent Identity
+- Support for additional interface types (e.g., scheduled execution, REST API)
